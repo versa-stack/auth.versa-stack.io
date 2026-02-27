@@ -1,26 +1,20 @@
-import k8s.api.core.v1 as corev1
-
 import ..config as c
 
+spec = c.hydra.spec
 secretName = c.makeName("secrets")
 
-# Deterministic secrets based on resource name - no clear-text required
-# Simple repeat pattern to generate sufficient entropy
-name = c.hydra.metadata.name
-systemSecret = "${name}-${name}-hydra-system-secret-${name}".replace("-", "")[:32]
-pairwiseSalt = "${name}-${name}-hydra-pairwise-salt".replace("-", "")[:16]
+# Reference existing secrets via SecretConfig - no clear-text required
+secretEnv = [
+    e for e in [
+        {
+            name = "ORY_HYDRA_SYSTEM_SECRET"
+            valueFrom = {secretKeyRef = {name = spec.secrets.systemSecretRef.name, key = spec.secrets.systemSecretRef.keys["systemSecret"]}}
+        } if spec.secrets?.systemSecretRef else None
+        {
+            name = "ORY_HYDRA_PAIRWISE_SALT"
+            valueFrom = {secretKeyRef = {name = spec.secrets.pairwiseSaltRef.name, key = spec.secrets.pairwiseSaltRef.keys["pairwiseSalt"]}}
+        } if spec.secrets?.pairwiseSaltRef else None
+    ] if e
+]
 
-secret = corev1.Secret {
-    metadata = {
-        name = secretName
-        namespace = c.hydra.metadata.namespace
-        labels = c.ownerLabels
-    }
-    type = "Opaque"
-    stringData = {
-        "ORY_HYDRA_SYSTEM_SECRET": systemSecret
-        "ORY_HYDRA_PAIRWISE_SALT": pairwiseSalt
-    }
-}
-
-items = [secret]
+items = []

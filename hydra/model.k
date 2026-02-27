@@ -10,6 +10,7 @@ schema Hydra:
 schema HydraSpec:
     chart?: _libm.HelmChartConfig
     urls?: HydraUrls
+    secrets?: HydraSecrets
     oidc?: HydraOidc
     cors?: _libm.CorsConfig
     ingress?: HydraIngress
@@ -20,6 +21,10 @@ schema HydraUrls:
     consent: str
     login: str
     logout: str
+
+schema HydraSecrets:
+    systemSecretRef?: _libm.SecretConfig
+    pairwiseSaltRef?: _libm.SecretConfig
 
 schema HydraOidc:
     subjectIdentifiers?: HydraSubjectIdentifiers

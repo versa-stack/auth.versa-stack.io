@@ -54,6 +54,33 @@ spec:
                   type: string
                 logout:
                   type: string
+            secrets:
+              type: object
+              properties:
+                systemSecretRef:
+                  type: object
+                  required:
+                    - name
+                    - keys
+                  properties:
+                    name:
+                      type: string
+                    keys:
+                      type: object
+                      additionalProperties:
+                        type: string
+                pairwiseSaltRef:
+                  type: object
+                  required:
+                    - name
+                    - keys
+                  properties:
+                    name:
+                      type: string
+                    keys:
+                      type: object
+                      additionalProperties:
+                        type: string
             oidc:
               type: object
               properties:
