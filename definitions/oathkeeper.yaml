@@ -1,0 +1,222 @@
+apiVersion: auth.versa-stack.io/v1alpha1
+kind: ResourceDefinition
+metadata:
+  name: oathkeepers
+  namespace: versa-stack-system
+spec:
+  schema:
+    group: auth.versa-stack.io
+    version: v1alpha1
+    kind: Oathkeeper
+    plural: oathkeepers
+    scope: Namespaced
+    shortNames:
+      - ok
+    categories:
+      - versa
+      - versa-auth
+    openAPIV3Schema:
+      type: object
+      required:
+        - spec
+      properties:
+        spec:
+          type: object
+          properties:
+            chart:
+              type: object
+              properties:
+                version:
+                  type: string
+                  default: "0.45.1"
+                valuesOverride:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+            authenticators:
+              type: object
+              properties:
+                jwt:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                    jwksUrls:
+                      type: array
+                      items:
+                        type: string
+                    scopeStrategy:
+                      type: string
+                      default: exact
+                anonymous:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                cookieSession:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                    checkSessionUrl:
+                      type: string
+                    preservePath:
+                      type: boolean
+                      default: true
+                    extraFrom:
+                      type: string
+                    subjectFrom:
+                      type: string
+            authorizers:
+              type: object
+              properties:
+                allow:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                deny:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                remoteJson:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                    remote:
+                      type: string
+                    payload:
+                      type: string
+            mutators:
+              type: object
+              properties:
+                noop:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                header:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                    headers:
+                      type: object
+                      additionalProperties:
+                        type: string
+            serve:
+              type: object
+              properties:
+                proxyPort:
+                  type: integer
+                  default: 4455
+                apiPort:
+                  type: integer
+                  default: 4456
+            accessRules:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - upstreamUrl
+                  - matchUrl
+                  - matchMethods
+                  - authenticators
+                  - authorizer
+                  - mutators
+                properties:
+                  id:
+                    type: string
+                  upstreamUrl:
+                    type: string
+                  matchUrl:
+                    type: string
+                  matchMethods:
+                    type: array
+                    items:
+                      type: string
+                  authenticators:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - handler
+                      properties:
+                        handler:
+                          type: string
+                  authorizer:
+                    type: object
+                    required:
+                      - handler
+                    properties:
+                      handler:
+                        type: string
+                  mutators:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - handler
+                      properties:
+                        handler:
+                          type: string
+            ingress:
+              type: object
+              properties:
+                proxy:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                    className:
+                      type: string
+                    annotations:
+                      type: object
+                      additionalProperties:
+                        type: string
+                    hosts:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - hostname
+                        properties:
+                          hostname:
+                            type: string
+                          path:
+                            type: string
+                            default: "/"
+                          pathType:
+                            type: string
+                            default: Prefix
+                    tls:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - secretName
+                          - hosts
+                        properties:
+                          secretName:
+                            type: string
+                          hosts:
+                            type: array
+                            items:
+                              type: string
+
+  kclSource:
+    oci:
+      repository: ghcr.io/versa-stack/auth.versa-stack.io
+      tag: latest
+      path: oathkeeper/main.k

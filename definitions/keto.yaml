@@ -1,0 +1,106 @@
+apiVersion: auth.versa-stack.io/v1alpha1
+kind: ResourceDefinition
+metadata:
+  name: ketoes
+  namespace: versa-stack-system
+spec:
+  schema:
+    group: auth.versa-stack.io
+    version: v1alpha1
+    kind: Keto
+    plural: ketoes
+    scope: Namespaced
+    shortNames:
+      - ke
+    categories:
+      - versa
+      - versa-auth
+    openAPIV3Schema:
+      type: object
+      required:
+        - spec
+      properties:
+        spec:
+          type: object
+          properties:
+            chart:
+              type: object
+              properties:
+                version:
+                  type: string
+                  default: "0.12.1"
+                valuesOverride:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+            namespaces:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - name
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+            serve:
+              type: object
+              properties:
+                readHost:
+                  type: string
+                  default: "0.0.0.0"
+                readPort:
+                  type: integer
+                  default: 4466
+                writeHost:
+                  type: string
+                  default: "0.0.0.0"
+                writePort:
+                  type: integer
+                  default: 4467
+                metricsHost:
+                  type: string
+                  default: "0.0.0.0"
+                metricsPort:
+                  type: integer
+                  default: 4468
+            ingress:
+              type: object
+              properties:
+                read:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                write:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+            database:
+              type: object
+              properties:
+                engine:
+                  type: string
+                  default: postgresql
+                version:
+                  type: string
+                topology:
+                  type: string
+                replicas:
+                  type: integer
+                  default: 1
+                storage:
+                  type: string
+                  default: "10Gi"
+                storageClassName:
+                  type: string
+                resources:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    additionalProperties:
+                      type: string
+
+  kclSource:
+    oci:
+      repository: ghcr.io/versa-stack/auth.versa-stack.io
+      tag: latest
+      path: keto/main.k
