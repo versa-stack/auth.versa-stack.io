@@ -28,7 +28,6 @@ spec:
           type: object
           required:
             - urls
-            - secrets
           properties:
             chart:
               type: object
@@ -54,15 +53,6 @@ spec:
                 login:
                   type: string
                 logout:
-                  type: string
-            secrets:
-              type: object
-              required:
-                - system
-              properties:
-                system:
-                  type: string
-                pairwiseSalt:
                   type: string
             oidc:
               type: object
