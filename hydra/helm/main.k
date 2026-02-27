@@ -21,9 +21,19 @@ _values = {
                 login = spec.urls.login
                 logout = spec.urls.logout
             }
-            secrets = {
-                system = [spec.secrets.system]
-            }
+            if spec.secrets:
+                secrets = {
+                    if spec.secrets.systemSecretRef:
+                        system = {
+                            existingSecret = spec.secrets.systemSecretRef.name
+                            existingSecretKey = spec.secrets.systemSecretRef.keys["systemSecret"]
+                        }
+                    if spec.secrets.pairwiseSaltRef:
+                        pairwise = {
+                            existingSecret = spec.secrets.pairwiseSaltRef.name
+                            existingSecretKey = spec.secrets.pairwiseSaltRef.keys["pairwiseSalt"]
+                        }
+                }
             if spec.oidc:
                 oidc = {
                     subject_identifiers = {
